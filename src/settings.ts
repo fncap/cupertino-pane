@@ -9,6 +9,7 @@ export class Settings {
       inverse: false,
       parentElement: null,
       followerElement: null,
+      followerStopAtMiddle: false,
       cssClass: null,
       fitHeight: false,
       maxFitHeight: null,

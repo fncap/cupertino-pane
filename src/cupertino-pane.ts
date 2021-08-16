@@ -841,7 +841,7 @@ export class CupertinoPane {
         this.paneEl.style.transition = 'all 0ms linear 0ms';
         this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
         // Bind for follower same transitions
-        if (this.followerEl) {
+        if (this.followerEl && !(this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle'] )) {
           this.followerEl.style.transition = 'all 0ms linear 0ms';
           this.followerEl.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
         }
@@ -866,7 +866,7 @@ export class CupertinoPane {
         }
         this.paneEl.style.transition = `initial`;
         // Bind for follower same transitions
-        if (this.followerEl) {
+        if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
           this.followerEl.style.transition = `initial`;
         }
 
@@ -930,7 +930,7 @@ export class CupertinoPane {
         // style
         this.paneEl.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`;
         // Bind for follower same transitions
-        if (this.followerEl) {
+        if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
           this.followerEl.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`;
         }
         
@@ -957,7 +957,7 @@ export class CupertinoPane {
           this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
           
           // Bind for follower same transitions
-          if (this.followerEl) {
+          if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
             this.followerEl.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
           }        
         }, params.type === 'present' ? 50 : 0); 

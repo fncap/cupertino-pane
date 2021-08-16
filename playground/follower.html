@@ -37,10 +37,12 @@
       <ion-button expand="block" onclick="hideDrawer()">Hide Drawer</ion-button>
       <ion-button expand="block" onclick="isHiddenDrawer()">Drawer is hidden</ion-button>
 
+      <ion-button expand="block" color="secondary" onclick="setTopDrawer()">Set Top</ion-button>
       <ion-button expand="block" color="secondary" onclick="setMiddleDrawer()">Set Middle</ion-button>
       <ion-button expand="block" color="secondary" onclick="setBottomDrawer()">Set Bottom</ion-button>
 
       <ion-button expand="block" color="tertiary" onclick="setBreakpoints()">Set Breakpoints</ion-button>
+      <ion-button expand="block" color="tertiary" onclick="setFollowerStopAtMiddle()">Set Follower Stop At Middle</ion-button>
   </ion-content>
   <script>
     var element = document.querySelector('ion-drawer');
@@ -88,6 +90,10 @@
         top: { enabled: true, height: 700 },
         middle: { enabled: true, height: 400 }
       });
+    };
+
+    async function setFollowerStopAtMiddle() {
+        drawer.settings.followerStopAtMiddle = true;
     };
   </script>
 </body>

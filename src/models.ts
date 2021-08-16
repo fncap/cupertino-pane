@@ -28,6 +28,7 @@ export interface PaneSettings {
   inverse: boolean;
   parentElement: any;
   followerElement: string;
+  followerStopAtMiddle: boolean;
   cssClass: string;
   fitHeight: boolean;
   maxFitHeight: number;
