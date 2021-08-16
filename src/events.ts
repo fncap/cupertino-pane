@@ -16,13 +16,13 @@ export class Events {
   private contentScrollTop: number = 0;
   private startY: number;
   private startX: number;
-  private steps: {posY: number, time: number}[] = [];  
+  private steps: {posY: number, time: number}[] = [];
   private inputBluredbyMove: boolean = false;
   private keyboardVisible: boolean = false;
-  
-  
-  constructor(private instance: CupertinoPane, 
-              private settings: CupertinoSettings, 
+
+
+  constructor(private instance: CupertinoPane,
+              private settings: CupertinoSettings,
               private device: Device,
               private breakpoints: Breakpoints) {
   }
@@ -45,7 +45,7 @@ export class Events {
     }
 
     // Fix Android issue with resize if not handle
-    if (!this.settings.handleKeyboard 
+    if (!this.settings.handleKeyboard
         && this.device.cordova
         && this.device.android) {
       window.addEventListener('keyboardWillHide', () => {
@@ -115,7 +115,7 @@ export class Events {
       el[type](this.touchEvents.start, this.touchStartCb, false);
       el[type](this.touchEvents.move, this.touchMoveCb, false);
       el[type](this.touchEvents.end, this.touchEndCb, false);
-      
+
       // Backdrop propagation fix
       this.instance.backdropEl?.[type](this.touchEvents.move, this.touchMoveBackdropCb, false);
     } else {
@@ -125,7 +125,7 @@ export class Events {
         el[type](this.touchEvents.start, this.touchStartCb, passiveListener);
         el[type](this.touchEvents.move, this.touchMoveCb, Support.passiveListener ? { passive: false, capture: false } : false);
         el[type](this.touchEvents.end, this.touchEndCb, passiveListener);
-        
+
         // Backdrop propagation fix
         this.instance.backdropEl?.[type](this.touchEvents.move, this.touchMoveBackdropCb, Support.passiveListener ? { passive: false, capture: false } : false);
         if (this.touchEvents['cancel']) {
@@ -137,7 +137,7 @@ export class Events {
         el[type]('mousedown', this.touchStartCb, false);
         el[type]('mousemove', this.touchMoveCb, false);
         el[type]('mouseup', this.touchEndCb, false);
-        
+
         // Backdrop propagation fix
         this.instance.backdropEl?.[type]('mousemove', this.touchMoveBackdropCb, false);
       }
@@ -148,10 +148,10 @@ export class Events {
       el[type]('click', this.onClickCb, true);
     }
   }
-  
+
   /**
    * Touch Start Event
-   * @param t 
+   * @param t
    */
   public touchStartCb = (t) => this.touchStart(t);
   private touchStart(t) {
@@ -178,18 +178,18 @@ export class Events {
 
     // if overflow content was scrolled
     // increase to scrolled value
-    if (this.contentScrollTop 
+    if (this.contentScrollTop
         && this.willScrolled(t)
         && this.isDragScrollabe(t.path || t.composedPath())) {
-      this.startY += this.contentScrollTop;  
+      this.startY += this.contentScrollTop;
     }
-    
+
     this.steps.push({posY: this.startY, time: Date.now()});
   }
 
-  /** 
+  /**
    * Touch Move Event
-   * @param t 
+   * @param t
    */
   public touchMoveBackdropCb = (t) => this.touchMoveBackdrop(t);
   private touchMoveBackdrop(t) {
@@ -198,9 +198,9 @@ export class Events {
     }
   }
 
-  /** 
+  /**
    * Touch Move Event
-   * @param t 
+   * @param t
    */
   public touchMoveCb = (t) => this.touchMove(t);
   private touchMove(t) {
@@ -209,7 +209,7 @@ export class Events {
     // Event emitter
     t.delta = this.steps[0]?.posY - clientY;
     this.settings.onDrag(t);
-    
+
     if (this.instance.disableDragEvents) {
       this.steps = [];
       return;
@@ -223,19 +223,19 @@ export class Events {
 
     // Handle desktop/mobile events
     if(t.type === 'mousemove' && !this.pointerDown) return;
-    
+
     // Delta
     const diffY = clientY - this.steps[this.steps.length - 1].posY;
     // Patch for 'touchmove' first start slowly events with velocity
-    let newVal = this.instance.getPanelTransformY() 
-      + ((this.steps.length < 2) ? (diffY * velocityY) : diffY);  
+    let newVal = this.instance.getPanelTransformY()
+      + ((this.steps.length < 2) ? (diffY * velocityY) : diffY);
 
     // textarea scrollbar
-    if (this.isFormElement(t.target) 
+    if (this.isFormElement(t.target)
       && this.isElementScrollable(t.target)) {
       return;
     }
-        
+
     // Detect if input was blured
     // TODO: Check that blured from pane child instance
     if (this.steps.length > 2) {
@@ -253,7 +253,7 @@ export class Events {
       const diffX = clientX - this.startX;
       const diffY = clientY - this.startY;
       touchAngle = (Math.atan2(Math.abs(diffY), Math.abs(diffX)) * 180) / Math.PI;
-      if (diffX * diffX + diffY * diffY >= 25 
+      if (diffX * diffX + diffY * diffY >= 25
           && (90 - touchAngle > this.settings.touchAngle)
           && this.steps.length === 1) {
         this.disableDragAngle = true;
@@ -262,7 +262,7 @@ export class Events {
     }
 
     // Not allow move panel with positive overflow scroll
-    if (this.isDragScrollabe(t.path || t.composedPath()) 
+    if (this.isDragScrollabe(t.path || t.composedPath())
           && this.instance.overflowEl.style.overflowY === 'auto') {
       this.instance.overflowEl.addEventListener('scroll', (s: any) => {
         this.contentScrollTop = s.target.scrollTop;
@@ -275,31 +275,31 @@ export class Events {
 
       // Scrolled -> Disable drag
       if (!this.settings.inverse) {
-        if ((newVal > this.breakpoints.topper && this.contentScrollTop > 0) 
-          || (newVal <= this.breakpoints.topper)) { 
+        if ((newVal > this.breakpoints.topper && this.contentScrollTop > 0)
+          || (newVal <= this.breakpoints.topper)) {
           return;
         }
-      } 
+      }
     }
-    
+
     // Non-inverse (normal) gestures
     if (!this.settings.inverse) {
       // Disallow drag topper than top point
-      if (!this.settings.upperThanTop 
+      if (!this.settings.upperThanTop
           && (newVal <= this.breakpoints.topper)) {
         this.instance.paneEl.style.transform = `translateY(${this.breakpoints.topper}px) translateZ(0px)`;
         return;
       }
 
       // Allow drag topper than top point
-      if (newVal <= this.breakpoints.topper 
+      if (newVal <= this.breakpoints.topper
           && this.settings.upperThanTop) {
         const screenDelta = this.instance.screen_height - this.instance.screenHeightOffset;
         const differKoef = (screenDelta - this.instance.getPanelTransformY()) / (screenDelta - this.breakpoints.topper) / 8;
         newVal = this.instance.getPanelTransformY() + (diffY * differKoef);
       }
 
-      // Disallow drag lower then bottom 
+      // Disallow drag lower then bottom
       if (!this.settings.lowerThanBottom
           && newVal >= this.breakpoints.bottomer) {
         this.instance.paneEl.style.transform = `translateY(${this.breakpoints.bottomer}px) translateZ(0px)`;
@@ -309,15 +309,15 @@ export class Events {
     } else {
       // Inverse gestures
       // Allow drag topper than top point
-      if (newVal >= this.breakpoints.topper 
+      if (newVal >= this.breakpoints.topper
           && this.settings.upperThanTop) {
         const screenDelta = this.instance.screen_height - this.instance.screenHeightOffset;
         const differKoef = (screenDelta - this.instance.getPanelTransformY()) / (screenDelta - this.breakpoints.topper) / 8;
         newVal = this.instance.getPanelTransformY() + (diffY * differKoef);
       }
-      
+
       // Disallow drag topper than top point
-      if (!this.settings.upperThanTop 
+      if (!this.settings.upperThanTop
           && (newVal >= this.breakpoints.topper)) {
         this.instance.paneEl.style.transform = `translateY(${this.breakpoints.topper}px) translateZ(0px)`;
         return;
@@ -329,10 +329,10 @@ export class Events {
           && this.instance.preventDismissEvent && this.settings.bottomClose) {
       let differKoef = ((-this.breakpoints.topper + this.breakpoints.topper - this.instance.getPanelTransformY()) / this.breakpoints.topper) / -8;
       newVal = this.instance.getPanelTransformY() + (diffY * (0.5 - differKoef));
-      
+
       let mousePointY = (clientY - 220 - this.instance.screen_height) * -1;
       if (mousePointY <= this.instance.screen_height - this.breakpoints.bottomer) {
-        this.instance.preventedDismiss = true; 
+        this.instance.preventedDismiss = true;
         // Emit event with prevent dismiss
         this.settings.onWillDismiss({prevented: true} as any);
         this.instance.moveToBreak(this.breakpoints.prevBreakpoint);
@@ -345,13 +345,13 @@ export class Events {
 
     this.instance.checkOpacityAttr(newVal);
     this.instance.checkOverflowAttr(newVal);
-    this.instance.doTransition({type: 'move', translateY: newVal});
+    this.instance.doTransition({type: 'move', translateY: newVal });
     this.steps.push({posY: clientY, time: Date.now()});
   }
 
   /**
    * Touch End Event
-   * @param t 
+   * @param t
    */
   public touchEndCb = (t) => this.touchEnd(t);
   private touchEnd(t) {
@@ -364,15 +364,15 @@ export class Events {
     // Swipe - next (if differ > 10)
     const diff =  this.steps[this.steps.length - 1]?.posY - this.steps[this.steps.length - 2]?.posY;
     // Set sensivity lower for web
-    const swipeNextSensivity = window.hasOwnProperty('cordova') 
-      ? (this.settings.fastSwipeSensivity + 2) : this.settings.fastSwipeSensivity; 
+    const swipeNextSensivity = window.hasOwnProperty('cordova')
+      ? (this.settings.fastSwipeSensivity + 2) : this.settings.fastSwipeSensivity;
     const fastSwipeNext = (Math.abs(diff) >= swipeNextSensivity);
     if (fastSwipeNext) {
       closest = this.instance.swipeNextPoint(diff, swipeNextSensivity, closest);
-      
+
       // Fast swipe toward bottom - close
-      if (this.settings.fastSwipeClose 
-          && this.breakpoints.currentBreakpoint < closest) {      
+      if (this.settings.fastSwipeClose
+          && this.breakpoints.currentBreakpoint < closest) {
         this.instance.destroy({animate:true});
         return;
       }
@@ -406,7 +406,7 @@ export class Events {
       this.instance.destroy({animate:true});
       return;
     }
-    
+
     // Simulationiusly emit event when touchend exact with next position (top)
     if (this.instance.getPanelTransformY() === closest) {
       this.settings.onTransitionEnd({target: this.instance.paneEl});
@@ -417,7 +417,7 @@ export class Events {
 
   /**
    * Click Event
-   * @param t 
+   * @param t
    */
   public onClickCb = (t) => this.onClick(t);
   private onClick(t) {
@@ -425,7 +425,7 @@ export class Events {
     if (!this.allowClick) {
       if (this.settings.preventClicks) {
         t.preventDefault();
-        t.stopPropagation();  
+        t.stopPropagation();
         t.stopImmediatePropagation();
       }
       return;
@@ -440,7 +440,7 @@ export class Events {
           }
           if (this.settings.breaks['middle'].enabled) {
             closest = 'middle';
-          } 
+          }
           this.instance.moveToBreak(closest);
       }
     }
@@ -469,7 +469,7 @@ export class Events {
     this.keyboardVisible = true;
     this.breakpoints.prevBreakpoint = Object.entries(this.breakpoints.breaks).find(val => val[1] === this.instance.getPanelTransformY())[0];
     let newHeight = this.settings.breaks[this.instance.currentBreak()].height + e.keyboardHeight;
-    
+
     // Landscape case
     let isLandscape = window.matchMedia('(orientation: landscape)').matches;
     if (isLandscape) {
@@ -505,12 +505,12 @@ export class Events {
 
     if (this.device.android) {
       this.fixAndroidResize();
-    }    
+    }
 
     if (this.inputBluredbyMove) {
       this.inputBluredbyMove = false;
       return;
-    } 
+    }
 
     if (!this.instance.isHidden()) {
       this.instance.moveToBreak(this.breakpoints.prevBreakpoint);
@@ -558,7 +558,7 @@ export class Events {
   }
 
   /**
-   * Fix android keyboard issue with transition 
+   * Fix android keyboard issue with transition
    * (resize window frame height on hide/show)
    */
   private fixAndroidResize() {
@@ -575,7 +575,7 @@ export class Events {
     });
   }
 
-  /** 
+  /**
    * Check if drag event fired by scrollable element
    */
   private isDragScrollabe(path):boolean {
@@ -604,11 +604,11 @@ export class Events {
 
   private isFormElement(el):boolean {
     const formElements: string[] = [
-      'input', 'select', 'option', 
+      'input', 'select', 'option',
       'textarea', 'button', 'label'
     ];
 
-    if (el && el.tagName 
+    if (el && el.tagName
         && formElements.includes(el.tagName.toLowerCase())) {
       return true;
     }
@@ -620,8 +620,8 @@ export class Events {
   }
 
   private isOnViewport(): boolean {
-    if (this.instance.paneEl 
-        && this.instance.paneEl.offsetWidth === 0 
+    if (this.instance.paneEl
+        && this.instance.paneEl.offsetWidth === 0
         && this.instance.paneEl.offsetHeight === 0 ) {
       return false;
     }

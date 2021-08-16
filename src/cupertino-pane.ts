@@ -25,6 +25,7 @@ export class CupertinoPane {
   private moveEl: HTMLDivElement;
   private destroyButtonEl: HTMLDivElement;
   private followerEl: NodeListOf<HTMLElement>;
+  private faderEl: NodeListOf<HTMLElement>;
 
   private settings: CupertinoSettings = (new Settings()).instance;
   private device: Device = new Device();
@@ -289,6 +290,21 @@ export class CupertinoPane {
           el.style.willChange = 'transform, border-radius';
           el.style.transform = `translateY(0px) translateZ(0px)`;
           el.style.transition = `all ${this.settings.animationDuration}ms ${this.getTimingFunction(this.settings.breaks[this.currentBreak()]?.bounce)} 0s`;
+        });
+      }
+
+      if (this.settings.faderElement){
+        if ((<NodeListOf<HTMLElement>>document.querySelectorAll(this.settings.faderElement))?.length <= 0) {
+          console.warn('Cupertino Pane: wrong fader element selector specified', this.settings.faderElement);
+          return;
+        }
+
+        this.faderEl = <NodeListOf<HTMLElement>>document.querySelectorAll(
+            this.settings.faderElement
+        );
+        this.faderEl.forEach(el => {
+          el.style.opacity = '1';
+          el.style.transition = `opacity ${this.settings.animationDuration}ms ${this.getTimingFunction(this.settings.breaks[this.currentBreak()]?.bounce)} 0s`;
         });
       }
 
@@ -852,7 +868,6 @@ export class CupertinoPane {
             el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
           });
         }
-
         // Push transition for each element
         if (this.settings.zStack) {
           this.settings.zStack.pushElements.forEach(item =>
@@ -971,6 +986,23 @@ export class CupertinoPane {
               const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
               el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
             });
+          }
+          const faderModifier = (() => [
+            {
+              itsMe: () => params.translateY < this.breakpoints.breaks['middle'],
+              modifier: -1
+            },
+            {
+              itsMe: () => params.translateY > this.breakpoints.breaks['top'],
+              modifier: +1,
+            },
+          ].find(x => x.itsMe())?.modifier)();
+          if (this.faderEl && faderModifier ) {
+              this.faderEl.forEach(el => {
+                const opacity = faderModifier > 0 ? 1 : 0;
+                el.style.transition = `opacity ${this.settings.animationDuration}ms ${timingForNext} 0s`;
+                el.style.opacity = '' + opacity;
+              });
           }
         }, params.type === 'present' ? 50 : 0);
 

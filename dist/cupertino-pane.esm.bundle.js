@@ -465,7 +465,7 @@ class Events {
                 const differKoef = (screenDelta - this.instance.getPanelTransformY()) / (screenDelta - this.breakpoints.topper) / 8;
                 newVal = this.instance.getPanelTransformY() + (diffY * differKoef);
             }
-            // Disallow drag lower then bottom 
+            // Disallow drag lower then bottom
             if (!this.settings.lowerThanBottom
                 && newVal >= this.breakpoints.bottomer) {
                 this.instance.paneEl.style.transform = `translateY(${this.breakpoints.bottomer}px) translateZ(0px)`;
@@ -734,6 +734,7 @@ class Settings {
             parentElement: null,
             followerElement: null,
             followerStopAtMiddle: false,
+            faderElement: null,
             cssClass: null,
             fitHeight: false,
             maxFitHeight: null,
@@ -1272,7 +1273,7 @@ class CupertinoPane {
         }
     }
     present(conf = { animate: false }) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.el)
                 return;
@@ -1312,6 +1313,18 @@ class CupertinoPane {
                     el.style.willChange = 'transform, border-radius';
                     el.style.transform = `translateY(0px) translateZ(0px)`;
                     el.style.transition = `all ${this.settings.animationDuration}ms ${this.getTimingFunction((_a = this.settings.breaks[this.currentBreak()]) === null || _a === void 0 ? void 0 : _a.bounce)} 0s`;
+                });
+            }
+            if (this.settings.faderElement) {
+                if (((_b = document.querySelectorAll(this.settings.faderElement)) === null || _b === void 0 ? void 0 : _b.length) <= 0) {
+                    console.warn('Cupertino Pane: wrong fader element selector specified', this.settings.faderElement);
+                    return;
+                }
+                this.faderEl = document.querySelectorAll(this.settings.faderElement);
+                this.faderEl.forEach(el => {
+                    var _a;
+                    el.style.opacity = '1';
+                    el.style.transition = `opacity ${this.settings.animationDuration}ms ${this.getTimingFunction((_a = this.settings.breaks[this.currentBreak()]) === null || _a === void 0 ? void 0 : _a.bounce)} 0s`;
                 });
             }
             // Assign multiplicators for push elements
@@ -1846,6 +1859,23 @@ class CupertinoPane {
                             const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
                             const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
                             el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
+                        });
+                    }
+                    const faderModifier = (() => { var _a; return (_a = [
+                        {
+                            itsMe: () => params.translateY < this.breakpoints.breaks['middle'],
+                            modifier: -1
+                        },
+                        {
+                            itsMe: () => params.translateY > this.breakpoints.breaks['top'],
+                            modifier: +1,
+                        },
+                    ].find(x => x.itsMe())) === null || _a === void 0 ? void 0 : _a.modifier; })();
+                    if (this.faderEl && faderModifier) {
+                        this.faderEl.forEach(el => {
+                            const opacity = faderModifier > 0 ? 1 : 0;
+                            el.style.transition = `opacity ${this.settings.animationDuration}ms ${timingForNext} 0s`;
+                            el.style.opacity = '' + opacity;
                         });
                     }
                 }, params.type === 'present' ? 50 : 0);

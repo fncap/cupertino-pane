@@ -27,6 +27,7 @@ export interface PaneSettings {
     parentElement: any;
     followerElement: string;
     followerStopAtMiddle: boolean;
+    faderElement: string;
     cssClass: string;
     fitHeight: boolean;
     maxFitHeight: number;

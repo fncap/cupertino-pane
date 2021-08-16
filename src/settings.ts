@@ -10,6 +10,7 @@ export class Settings {
       parentElement: null,
       followerElement: null,
       followerStopAtMiddle: false,
+      faderElement: null,
       cssClass: null,
       fitHeight: false,
       maxFitHeight: null,

@@ -30,6 +30,12 @@
         </ion-fab-button>
       </ion-fab>
 
+      <ion-fab horizontal="end" vertical="top">
+          <ion-fab-button size="small">
+              <ion-icon name="information-outline"></ion-icon>
+          </ion-fab-button>
+      </ion-fab>
+
       <ion-drawer>
         <h1>Header</h1>
         <p hide-on-bottom>Content</p>
@@ -52,7 +58,8 @@
   <script>
     var element = document.querySelector('ion-drawer');
     var drawer = new CupertinoPane(element, {
-      followerElement: 'ion-fab,.absolute-bottom',
+      followerElement: 'ion-fab[vertical="bottom"],.absolute-bottom',
+      faderElement: 'ion-fab[vertical="top"]',
       buttonClose: false,
       lowerThanBottom: false,
       initialBreak: 'bottom',
