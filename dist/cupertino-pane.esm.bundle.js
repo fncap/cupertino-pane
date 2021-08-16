@@ -1758,14 +1758,22 @@ class CupertinoPane {
                 this.paneEl.style.transition = 'all 0ms linear 0ms';
                 this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
                 // Bind for follower same transitions
-                if (this.followerEl && !(this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle'])) {
-                    const inverseModifier = this.settings.inverse ? +1 : -1;
-                    const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
-                    const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
-                    this.followerEl.forEach(el => {
-                        el.style.transition = 'all 0ms linear 0ms';
-                        el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
-                    });
+                if (this.followerEl) {
+                    if (!this.settings.followerStopAtMiddle === true || params.translateY >= this.breakpoints.breaks['middle']) {
+                        const inverseModifier = this.settings.inverse ? +1 : -1;
+                        const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
+                        const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
+                        this.followerEl.forEach(el => {
+                            el.style.zIndex = '';
+                            el.style.transition = 'all 0ms linear 0ms';
+                            el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
+                        });
+                    }
+                    if (this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle']) {
+                        this.followerEl.forEach(el => {
+                            el.style.zIndex = '-1';
+                        });
+                    }
                 }
                 // Push transition for each element
                 if (this.settings.zStack) {
@@ -1780,8 +1788,11 @@ class CupertinoPane {
                 }
                 this.paneEl.style.transition = `initial`;
                 // Bind for follower same transitions
-                if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-                    this.followerEl.forEach(el => el.style.transition = `initial`);
+                if (this.followerEl) {
+                    const property = this.settings.followerStopAtMiddle === true && this.currentBreak() === 'middle' ? 'z-index' : undefined;
+                    this.followerEl.forEach(el => {
+                        el.style.removeProperty(property);
+                    });
                 }
                 // Backdrop
                 if (this.settings.backdrop) {
@@ -1852,15 +1863,23 @@ class CupertinoPane {
                     this.settings.onTransitionStart({ translateY: { new: params.translateY } });
                     this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
                     // Bind for follower same transitions
-                    if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-                        this.followerEl.forEach(el => {
-                            var _a;
-                            const inverseModifier = this.settings.inverse ? +1 : -1;
-                            const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
-                            const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
-                            el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
-                        });
+                    if (this.followerEl) {
+                        if (!(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
+                            this.followerEl.forEach(el => {
+                                var _a;
+                                const inverseModifier = this.settings.inverse ? +1 : -1;
+                                const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
+                                const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
+                                el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
+                            });
+                        }
+                        if (this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle']) {
+                            this.followerEl.forEach(el => {
+                                el.style.zIndex = '-1';
+                            });
+                        }
                     }
+                    //
                     const faderModifier = (() => { var _a; return (_a = [
                         {
                             itsMe: () => params.translateY < this.breakpoints.breaks['middle'],
