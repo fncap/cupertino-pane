@@ -1117,7 +1117,7 @@ class CupertinoPane {
         this.events = new Events(this, this.settings, this.device, this.breakpoints);
     }
     drawBaseElements() {
-        // Parent 
+        // Parent
         this.parentEl = this.settings.parentElement;
         // Wrapper
         this.wrapperEl = document.createElement('div');
@@ -1739,16 +1739,19 @@ class CupertinoPane {
      */
     doTransition(params = {}) {
         return new Promise((resolve) => {
-            var _a;
+            var _a, _b;
             // touchmove simple event
             if (params.type === 'move') {
                 this.paneEl.style.transition = 'all 0ms linear 0ms';
                 this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
                 // Bind for follower same transitions
                 if (this.followerEl && !(this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle'])) {
+                    const inverseModifier = this.settings.inverse ? +1 : -1;
+                    const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
+                    const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
                     this.followerEl.forEach(el => {
                         el.style.transition = 'all 0ms linear 0ms';
-                        el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
+                        el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
                     });
                 }
                 // Push transition for each element
@@ -1767,7 +1770,7 @@ class CupertinoPane {
                 if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
                     this.followerEl.forEach(el => el.style.transition = `initial`);
                 }
-                // Backdrop 
+                // Backdrop
                 if (this.settings.backdrop) {
                     if (params.type === 'destroy' || params.type === 'hide') {
                         this.backdropEl.style.transition = `initial`;
@@ -1792,7 +1795,7 @@ class CupertinoPane {
                 || params.type === 'present'
                 || params.type === 'hide'
                 || params.type === 'destroy') {
-                // backdrop 
+                // backdrop
                 if (this.settings.backdrop) {
                     if (this.isHidden()
                         || params.type === 'hide'
@@ -1811,9 +1814,9 @@ class CupertinoPane {
                 // freemode
                 if (params.type === 'end' && this.settings.freeMode)
                     return resolve(true);
-                // Get timing function && push for next 
+                // Get timing function && push for next
                 const nextBreak = Object.entries(this.breakpoints.breaks).find(val => val[1] === params.translateY);
-                let bounce = nextBreak && ((_a = this.settings.breaks[nextBreak[0]]) === null || _a === void 0 ? void 0 : _a.bounce);
+                let bounce = nextBreak && ((_b = this.settings.breaks[nextBreak[0]]) === null || _b === void 0 ? void 0 : _b.bounce);
                 const timingForNext = this.getTimingFunction(bounce);
                 // style
                 this.paneEl.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`;
@@ -1824,8 +1827,8 @@ class CupertinoPane {
                 // Push transition
                 if (this.settings.zStack) {
                     // Reason of timeout is to hide empty space when present pane and push element
-                    // we should start push after pushMinHeight but for present 
-                    // transition we can't calculate where pane Y is.    
+                    // we should start push after pushMinHeight but for present
+                    // transition we can't calculate where pane Y is.
                     setTimeout(() => {
                         this.settings.zStack.pushElements.forEach(item => this.pushTransition(document.querySelector(item), params.translateY, `all ${this.settings.animationDuration}ms ${this.settings.animationType} 0s`));
                     }, (this.settings.zStack.cardYOffset && params.type === 'present') ? 50 : 0);
@@ -1837,7 +1840,13 @@ class CupertinoPane {
                     this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
                     // Bind for follower same transitions
                     if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-                        this.followerEl.forEach(el => el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`);
+                        this.followerEl.forEach(el => {
+                            var _a;
+                            const inverseModifier = this.settings.inverse ? +1 : -1;
+                            const initialBreakDeltaModifier = ((_a = this.settings.breaks[this.settings.initialBreak].height) !== null && _a !== void 0 ? _a : 0) * inverseModifier;
+                            const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
+                            el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
+                        });
                     }
                 }, params.type === 'present' ? 50 : 0);
                 let getNextBreakpoint = Object.entries(this.breakpoints.breaks).find(val => val[1] === params.translateY);

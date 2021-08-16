@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
   <style>
     ion-drawer { padding: 0 20px; }
-    ion-fab {
-      margin-bottom: 120px;
-    }
+    /*ion-fab {*/
+    /*  margin-bottom: 120px;*/
+    /*}*/
     .absolute-bottom{
         position: absolute;
         bottom: 0
@@ -47,7 +47,7 @@
 
       <ion-button expand="block" color="tertiary" onclick="setBreakpoints()">Set Breakpoints</ion-button>
       <ion-button expand="block" color="tertiary" onclick="setFollowerStopAtMiddle()">Set Follower Stop At Middle</ion-button>
-      <div class="absolute-bottom"> Absolute element at bottom 0</div>
+      <ion-badge class="absolute-bottom ion-margin-start ion-margin-bottom">Absolute element at bottom 0</ion-badge>
   </ion-content>
   <script>
     var element = document.querySelector('ion-drawer');

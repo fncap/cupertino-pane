@@ -6,14 +6,14 @@ import { Settings } from './settings';
 import { Breakpoints } from './breakpoints';
 export type CupertinoSettings = Partial<PaneSettings>;
 
-export class CupertinoPane {  
+export class CupertinoPane {
   public disableDragEvents: boolean = false;
   public screen_height: number;
   public screenHeightOffset: number;
   public preventDismissEvent: boolean = false;
   public preventedDismiss: boolean = false;
   public rendered: boolean = false;
-  
+
   public wrapperEl: HTMLDivElement;
   public paneEl: HTMLDivElement;
   public overflowEl: HTMLElement;
@@ -40,7 +40,7 @@ export class CupertinoPane {
     stackZAngle: 160,
   };
 
-  constructor(private selector: (string | HTMLElement), 
+  constructor(private selector: (string | HTMLElement),
               conf: CupertinoSettings = {}) {
     // Element or selector
     if (selector instanceof HTMLElement) {
@@ -54,7 +54,7 @@ export class CupertinoPane {
       console.warn('Cupertino Pane: wrong selector or DOM element specified', this.selector);
       return;
     }
-    
+
     // Pane class created
     if (this.isPanePresented()) {
       console.error('Cupertino Pane: specified selector or DOM element already in use', this.selector);
@@ -64,7 +64,7 @@ export class CupertinoPane {
     this.el = this.selector;
     this.el.style.display = 'none';
     this.settings = {...this.settings, ...conf};
-    
+
     if (this.settings.parentElement) {
       this.settings.parentElement = <HTMLElement>document.querySelector(
         this.settings.parentElement
@@ -78,9 +78,9 @@ export class CupertinoPane {
   }
 
   private drawBaseElements() {
-    // Parent 
+    // Parent
     this.parentEl = this.settings.parentElement;
-    
+
     // Wrapper
     this.wrapperEl = document.createElement('div');
     this.wrapperEl.classList.add('cupertino-pane-wrapper');
@@ -191,7 +191,7 @@ export class CupertinoPane {
         margin-top: -5px;
       }
     `;
-    
+
     // Destroy button
     this.destroyButtonEl = document.createElement('div');
     this.destroyButtonEl.classList.add('destroy-button');
@@ -228,10 +228,10 @@ export class CupertinoPane {
         z-index: 10;
       }
     `;
-    
+
     // Inject internal CSS
     this.addStyle(internalStyles);
-    
+
     // inject DOM
     this.parentEl.appendChild(this.wrapperEl);
     this.wrapperEl.appendChild(this.paneEl);
@@ -250,7 +250,7 @@ export class CupertinoPane {
         this.moveToBreak(this.settings.initialBreak);
         return;
       }
-      
+
       // Pane already exist but not rendered in this class
       if (this.isPanePresented() && !this.rendered) {
         console.warn('Cupertino Pane: specified selector or DOM element already in use', this.selector);
@@ -259,7 +259,7 @@ export class CupertinoPane {
 
       // Emit event
       this.settings.onWillPresent();
-      
+
       this.updateScreenHeights();
       this.drawBaseElements();
       await this.setBreakpoints();
@@ -275,7 +275,7 @@ export class CupertinoPane {
       this.contentEl.style.display = 'block';
       this.wrapperEl.classList.add('rendered');
       this.rendered = true;
-      
+
       if (this.settings.followerElement) {
         if ((<NodeListOf<HTMLElement>>document.querySelectorAll(this.settings.followerElement))?.length <= 0) {
           console.warn('Cupertino Pane: wrong follower element selector specified', this.settings.followerElement);
@@ -296,8 +296,8 @@ export class CupertinoPane {
       if (this.settings.zStack) {
         this.setZstackConfig(this.settings.zStack);
         this.setPushMultiplicators();
-      }        
-              
+      }
+
       if ((this.settings.buttonClose && this.settings.buttonDestroy) && !this.settings.inverse) {
         this.paneEl.appendChild(this.destroyButtonEl);
         this.destroyButtonEl.addEventListener('click', (t) => this.destroy({animate:true, destroyButton: true}));
@@ -318,19 +318,19 @@ export class CupertinoPane {
         this.renderBackdrop();
       }
       this.checkOpacityAttr(this.breakpoints.currentBreakpoint);
-      
+
       /****** Fix android issues *******/
       if (this.device.android) {
         // Body patch prevent android pull-to-refresh
-        document.body.style['overscrollBehaviorY'] = 'none';  
-      }      
+        document.body.style['overscrollBehaviorY'] = 'none';
+      }
 
       /****** Attach Events *******/
       this.events.attachAllEvents();
 
       /****** Animation & Transition ******/
       if (conf.animate) {
-        await this.doTransition({type: 'present', translateY: this.breakpoints.breaks[this.settings.initialBreak]}); 
+        await this.doTransition({type: 'present', translateY: this.breakpoints.breaks[this.settings.initialBreak]});
       } else {
         // No initial transitions
         this.breakpoints.prevBreakpoint = this.settings.initialBreak;
@@ -339,9 +339,9 @@ export class CupertinoPane {
           this.backdropEl.style.display = `block`;
         }
         if (this.settings.zStack) {
-          this.settings.zStack.pushElements.forEach(item => 
+          this.settings.zStack.pushElements.forEach(item =>
             this.pushTransition(
-              document.querySelector(item), 
+              document.querySelector(item),
               this.breakpoints.breaks[this.settings.initialBreak], 'unset'
             )
           );
@@ -361,7 +361,7 @@ export class CupertinoPane {
   public getPaneHeight(): number {
     if (!this.settings.inverse) {
       return this.screen_height - this.breakpoints.topper - this.settings.bottomOffset;
-    } 
+    }
 
     return this.breakpoints.bottomer - this.settings.bottomOffset;
   }
@@ -384,8 +384,8 @@ export class CupertinoPane {
       this.overflowEl = <HTMLElement>attrElements[0];
       this.overflowEl.style.overflowX = 'hidden';
     }
-    
-    if (this.settings.topperOverflow) {   
+
+    if (this.settings.topperOverflow) {
       if (this.settings.upperThanTop) {
         console.warn('Cupertino Pane: "upperThanTop" allowed for disabled "topperOverflow"');
       }
@@ -419,7 +419,7 @@ export class CupertinoPane {
   }
 
   public checkOverflowAttr(val) {
-    if (!this.settings.topperOverflow 
+    if (!this.settings.topperOverflow
         || !this.overflowEl) {
       return;
     }
@@ -457,11 +457,11 @@ export class CupertinoPane {
     if (this.breakpoints.currentBreakpoint === brs['top']) {
         if (diff > maxDiff) {
           if (settingsBreaks['middle'].enabled) { return brs['middle']; }
-          if (settingsBreaks['bottom'].enabled) { 
+          if (settingsBreaks['bottom'].enabled) {
             if (brs['middle'] < closest) {
               return closest;
             }
-            return brs['bottom']; 
+            return brs['bottom'];
           }
         }
         return brs['top'];
@@ -479,11 +479,11 @@ export class CupertinoPane {
 
     if (this.breakpoints.currentBreakpoint === brs['bottom']) {
         if (diff < -maxDiff) {
-          if (settingsBreaks['middle'].enabled) { 
+          if (settingsBreaks['middle'].enabled) {
             if (brs['middle'] > closest) {
               return closest;
             }
-            return brs['middle']; 
+            return brs['middle'];
           }
           if (settingsBreaks['top'].enabled) { return brs['top']; }
         }
@@ -495,13 +495,13 @@ export class CupertinoPane {
 
   /**
    * Private Utils methods
-   */  
+   */
   private getTimingFunction(bounce) {
     return bounce ? 'cubic-bezier(0.175, 0.885, 0.370, 1.120)' : this.settings.animationType;
   }
 
   private isBackdropPresented() {
-    return document.querySelector(`.cupertino-pane-wrapper .backdrop`) 
+    return document.querySelector(`.cupertino-pane-wrapper .backdrop`)
     ? true : false;
   }
 
@@ -560,7 +560,7 @@ export class CupertinoPane {
   public setZstackConfig(zStack: ZStackSettings): void {
     this.settings.zStack = zStack ? {...this.zStackDefaults, ...zStack} : null;;
   }
-  
+
   /**
    * Backdrop
    */
@@ -579,16 +579,16 @@ export class CupertinoPane {
     const transitionEnd = () => {
       this.backdropEl.style.transition = `initial`;
       this.backdropEl.style.display = `none`;
-      this.backdropEl.removeEventListener('transitionend', transitionEnd); 
+      this.backdropEl.removeEventListener('transitionend', transitionEnd);
     }
-    
+
     this.backdropEl.style.transition = `all ${this.settings.animationDuration}ms ${this.settings.animationType} 0s`;
     this.backdropEl.style.backgroundColor = 'rgba(0,0,0,.0)';
 
     if (!conf.show) {
       // Destroy
       if (this.backdropEl.style.display === 'none') return;
-      this.backdropEl.addEventListener('transitionend', transitionEnd);   
+      this.backdropEl.addEventListener('transitionend', transitionEnd);
     } else {
       // Present
       this.backdropEl.style.display = 'block';
@@ -624,14 +624,14 @@ export class CupertinoPane {
 
   /**
    * Enable pane drag events
-   */  
+   */
   public enableDrag(): void {
     this.disableDragEvents = false;
   }
 
   /**
    * Public user method to reset breakpoints
-   * @param conf 
+   * @param conf
    */
   public async setBreakpoints(conf?: PaneBreaks, bottomOffset?: number) {
     if (this.isPanePresented() && !conf) {
@@ -646,7 +646,7 @@ export class CupertinoPane {
     if (!this.wrapperEl || !this.el) {
       return null;
     }
-    
+
     if (this.breakpoints.calcHeightInProcess) {
       console.warn(`Cupertino Pane: calcFitHeight() already in process`);
       return null;
@@ -678,9 +678,9 @@ export class CupertinoPane {
       return null;
     }
 
-    let translateY = this.screenHeightOffset ? this.screen_height - val : val; 
+    let translateY = this.screenHeightOffset ? this.screen_height - val : val;
     this.checkOpacityAttr(translateY);
-    this.doTransition({type: 'breakpoint', translateY });    
+    this.doTransition({type: 'breakpoint', translateY });
   }
 
   public hide() {
@@ -702,7 +702,7 @@ export class CupertinoPane {
       console.warn(`Cupertino Pane: Present pane before call isHidden()`);
       return null;
     }
-    
+
     return this.paneEl.style.transform === `translateY(${this.screenHeightOffset}px) translateZ(0px)`;
   }
 
@@ -718,7 +718,7 @@ export class CupertinoPane {
   private destroyResets(): void {
     this.parentEl.appendChild(this.contentEl);
     this.wrapperEl.remove();
-    
+
     /****** Detach Events *******/
     this.events.detachAllEvents();
 
@@ -736,10 +736,10 @@ export class CupertinoPane {
   }
 
   public async destroy(conf: {
-      animate: boolean, 
+      animate: boolean,
       destroyButton?: boolean
     } = {
-      animate: false, 
+      animate: false,
       destroyButton: false
     }): Promise<true> {
 
@@ -763,7 +763,7 @@ export class CupertinoPane {
 
     /****** Animation & Transition ******/
     if (conf.animate) {
-      await this.doTransition({type: 'destroy', translateY: this.screenHeightOffset, destroyButton: conf.destroyButton}); 
+      await this.doTransition({type: 'destroy', translateY: this.screenHeightOffset, destroyButton: conf.destroyButton});
     } else {
       this.destroyResets();
       // Emit event
@@ -775,7 +775,7 @@ export class CupertinoPane {
     let zStack = this.settings.zStack.pushElements;
     pushElement.style.transition = transition;
     newPaneY = this.screenHeightOffset - newPaneY;
-    const topHeight = this.settings.zStack.minPushHeight 
+    const topHeight = this.settings.zStack.minPushHeight
       ? this.settings.zStack.minPushHeight : this.screenHeightOffset - this.breakpoints.bottomer;
     const minHeight = this.screenHeightOffset - this.breakpoints.topper;
 
@@ -784,7 +784,7 @@ export class CupertinoPane {
     let scaleNew =  Math.pow(this.settings.zStack.cardZScale, multiplicator);
     let scaleNormal = Math.pow(this.settings.zStack.cardZScale, multiplicator - 1);
     let pushY = 6 + this.settings.zStack.cardYOffset; // 6 is iOS style offset for z-stacks
-    let yNew = -1 * (pushY * multiplicator); 
+    let yNew = -1 * (pushY * multiplicator);
     let yNormal = (yNew + pushY);
     let contrastNew = Math.pow(this.settings.zStack.cardContrast, multiplicator);
     let contrastNormal = Math.pow(this.settings.zStack.cardContrast, multiplicator - 1);
@@ -814,7 +814,7 @@ export class CupertinoPane {
       );
       return;
     }
-    
+
     // Pusher drag/move
     const getXbyY = (min, max) => {
       let val = (minHeight * max - topHeight * min) * -1;
@@ -828,7 +828,7 @@ export class CupertinoPane {
     setStyles(
       getXbyY(scaleNew, scaleNormal),
       getXbyY(yNew, yNormal),
-      getXbyY(contrastNew, contrastNormal), 
+      getXbyY(contrastNew, contrastNormal),
       getXbyY(-10, 0) * -1,
     );
   }
@@ -844,22 +844,25 @@ export class CupertinoPane {
         this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
         // Bind for follower same transitions
         if (this.followerEl && !(this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle'] )) {
+          const inverseModifier = this.settings.inverse ? +1 : -1;
+          const initialBreakDeltaModifier = (this.settings.breaks[this.settings.initialBreak].height ?? 0) * inverseModifier;
+          const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
           this.followerEl.forEach(el => {
             el.style.transition = 'all 0ms linear 0ms';
-            el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
+            el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
           });
         }
 
         // Push transition for each element
         if (this.settings.zStack) {
-          this.settings.zStack.pushElements.forEach(item => 
+          this.settings.zStack.pushElements.forEach(item =>
             this.pushTransition(
-              document.querySelector(item), 
+              document.querySelector(item),
               this.getPanelTransformY(), 'all 0ms linear 0ms'
             )
           );
         }
-        
+
         return resolve(true);
       }
 
@@ -874,7 +877,7 @@ export class CupertinoPane {
           this.followerEl.forEach(el => el.style.transition = `initial`);
         }
 
-        // Backdrop 
+        // Backdrop
         if (this.settings.backdrop) {
           if (params.type === 'destroy' || params.type === 'hide') {
             this.backdropEl.style.transition = `initial`;
@@ -884,7 +887,7 @@ export class CupertinoPane {
 
         // Emit event
         if (params.type === 'present') {
-          this.settings.onDidPresent();  
+          this.settings.onDidPresent();
         }
         if (params.type === 'destroy') {
           this.settings.onDidDismiss({destroyButton: params.destroyButton} as any);
@@ -897,13 +900,13 @@ export class CupertinoPane {
       };
 
       // MoveToBreak, Touchend, Present, Hide, Destroy events
-      if (params.type === 'breakpoint' 
-          || params.type === 'end' 
+      if (params.type === 'breakpoint'
+          || params.type === 'end'
           || params.type === 'present'
           || params.type === 'hide'
           || params.type === 'destroy') {
 
-        // backdrop 
+        // backdrop
         if (this.settings.backdrop) {
           if (this.isHidden()
               || params.type === 'hide'
@@ -911,20 +914,20 @@ export class CupertinoPane {
               || params.type === 'present') {
             this.backdropEl.style.backgroundColor = 'rgba(0,0,0,.0)';
             this.backdropEl.style.transition = `all ${this.settings.animationDuration}ms ${this.settings.animationType} 0s`;
-            
+
             if (params.type !== 'hide' && params.type !== 'destroy') {
               this.backdropEl.style.display = 'block';
               setTimeout(() => {
                 this.backdropEl.style.backgroundColor = `rgba(0,0,0, ${this.settings.backdropOpacity})`;
               }, 50);
             }
-          } 
+          }
         }
-        
-        // freemode
-        if (params.type === 'end' && this.settings.freeMode) return resolve(true); 
 
-        // Get timing function && push for next 
+        // freemode
+        if (params.type === 'end' && this.settings.freeMode) return resolve(true);
+
+        // Get timing function && push for next
         const nextBreak = Object.entries(this.breakpoints.breaks).find(
           val => val[1] === params.translateY
         );
@@ -937,17 +940,17 @@ export class CupertinoPane {
         if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
           this.followerEl.forEach(el => el.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`);
         }
-        
+
         // Push transition
         if (this.settings.zStack) {
           // Reason of timeout is to hide empty space when present pane and push element
-          // we should start push after pushMinHeight but for present 
-          // transition we can't calculate where pane Y is.    
+          // we should start push after pushMinHeight but for present
+          // transition we can't calculate where pane Y is.
           setTimeout(() => {
-            this.settings.zStack.pushElements.forEach(item => 
+            this.settings.zStack.pushElements.forEach(item =>
               this.pushTransition(
-                document.querySelector(item), 
-                params.translateY, 
+                document.querySelector(item),
+                params.translateY,
                 `all ${this.settings.animationDuration}ms ${this.settings.animationType} 0s`
               )
             );
@@ -959,12 +962,17 @@ export class CupertinoPane {
           // Emit event
           this.settings.onTransitionStart({translateY: {new: params.translateY}});
           this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
-          
+
           // Bind for follower same transitions
           if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-            this.followerEl.forEach(el => el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`);
-          }        
-        }, params.type === 'present' ? 50 : 0); 
+            this.followerEl.forEach(el => {
+              const inverseModifier = this.settings.inverse ? +1 : -1;
+              const initialBreakDeltaModifier = (this.settings.breaks[this.settings.initialBreak].height ?? 0) * inverseModifier;
+              const translateY = params.translateY - this.breakpoints.breaks[this.settings.initialBreak] + initialBreakDeltaModifier;
+              el.style.transform = `translateY(${translateY}px) translateZ(0px)`;
+            });
+          }
+        }, params.type === 'present' ? 50 : 0);
 
 
         let getNextBreakpoint = Object.entries(this.breakpoints.breaks).find(val => val[1] === params.translateY);
