@@ -9,11 +9,15 @@
   <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
   <script src="../dist/cupertino-pane.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
   <style>
     ion-drawer { padding: 0 20px; }
     ion-fab {
       margin-bottom: 120px;
+    }
+    .absolute-bottom{
+        position: absolute;
+        bottom: 0
     }
   </style>
 </head>
@@ -25,10 +29,10 @@
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
-      
+
       <ion-drawer>
         <h1>Header</h1>
-        <p hide-on-bottom>Content</p> 
+        <p hide-on-bottom>Content</p>
       </ion-drawer>
 
       <ion-button expand="block" color="danger" onclick="presentDrawer()">Present Drawer</ion-button>
@@ -43,11 +47,12 @@
 
       <ion-button expand="block" color="tertiary" onclick="setBreakpoints()">Set Breakpoints</ion-button>
       <ion-button expand="block" color="tertiary" onclick="setFollowerStopAtMiddle()">Set Follower Stop At Middle</ion-button>
+      <div class="absolute-bottom"> Absolute element at bottom 0</div>
   </ion-content>
   <script>
     var element = document.querySelector('ion-drawer');
-    var drawer = new CupertinoPane(element, { 
-      followerElement: 'ion-fab',
+    var drawer = new CupertinoPane(element, {
+      followerElement: 'ion-fab,.absolute-bottom',
       buttonClose: false,
       lowerThanBottom: false,
       initialBreak: 'bottom',
@@ -64,7 +69,7 @@
     async function destroyDrawer() {
       drawer.destroy({animate: true});
     };
-    
+
     async function hideDrawer() {
       drawer.hide();
     };

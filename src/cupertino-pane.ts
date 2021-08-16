@@ -24,7 +24,7 @@ export class CupertinoPane {
   private draggableEl: HTMLDivElement;
   private moveEl: HTMLDivElement;
   private destroyButtonEl: HTMLDivElement;
-  private followerEl: HTMLElement;
+  private followerEl: NodeListOf<HTMLElement>;
 
   private settings: CupertinoSettings = (new Settings()).instance;
   private device: Device = new Device();
@@ -277,17 +277,19 @@ export class CupertinoPane {
       this.rendered = true;
       
       if (this.settings.followerElement) {
-        if (!<HTMLElement>document.querySelector(this.settings.followerElement)) {
+        if ((<NodeListOf<HTMLElement>>document.querySelectorAll(this.settings.followerElement))?.length <= 0) {
           console.warn('Cupertino Pane: wrong follower element selector specified', this.settings.followerElement);
           return;
         }
 
-        this.followerEl = <HTMLElement>document.querySelector(
+        this.followerEl = <NodeListOf<HTMLElement>>document.querySelectorAll(
           this.settings.followerElement
         );
-        this.followerEl.style.willChange = 'transform, border-radius';
-        this.followerEl.style.transform = `translateY(0px) translateZ(0px)`;
-        this.followerEl.style.transition = `all ${this.settings.animationDuration}ms ${this.getTimingFunction(this.settings.breaks[this.currentBreak()]?.bounce)} 0s`;
+        this.followerEl.forEach(el => {
+          el.style.willChange = 'transform, border-radius';
+          el.style.transform = `translateY(0px) translateZ(0px)`;
+          el.style.transition = `all ${this.settings.animationDuration}ms ${this.getTimingFunction(this.settings.breaks[this.currentBreak()]?.bounce)} 0s`;
+        });
       }
 
       // Assign multiplicators for push elements
@@ -842,8 +844,10 @@ export class CupertinoPane {
         this.paneEl.style.transform = `translateY(${params.translateY}px) translateZ(0px)`;
         // Bind for follower same transitions
         if (this.followerEl && !(this.settings.followerStopAtMiddle === true && params.translateY < this.breakpoints.breaks['middle'] )) {
-          this.followerEl.style.transition = 'all 0ms linear 0ms';
-          this.followerEl.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
+          this.followerEl.forEach(el => {
+            el.style.transition = 'all 0ms linear 0ms';
+            el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
+          });
         }
 
         // Push transition for each element
@@ -867,7 +871,7 @@ export class CupertinoPane {
         this.paneEl.style.transition = `initial`;
         // Bind for follower same transitions
         if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-          this.followerEl.style.transition = `initial`;
+          this.followerEl.forEach(el => el.style.transition = `initial`);
         }
 
         // Backdrop 
@@ -931,7 +935,7 @@ export class CupertinoPane {
         this.paneEl.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`;
         // Bind for follower same transitions
         if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-          this.followerEl.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`;
+          this.followerEl.forEach(el => el.style.transition = `transform ${this.settings.animationDuration}ms ${timingForNext} 0s`);
         }
         
         // Push transition
@@ -958,7 +962,7 @@ export class CupertinoPane {
           
           // Bind for follower same transitions
           if (this.followerEl && !(this.settings.followerStopAtMiddle === true && this.breakpoints.topper === params.translateY)) {
-            this.followerEl.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`;
+            this.followerEl.forEach(el => el.style.transform = `translateY(${params.translateY - this.breakpoints.breaks[this.settings.initialBreak]}px) translateZ(0px)`);
           }        
         }, params.type === 'present' ? 50 : 0); 
 
