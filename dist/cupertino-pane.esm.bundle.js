@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: August 16, 2021
+ * Released on: August 17, 2021
  */
 
 /*! *****************************************************************************
@@ -1604,38 +1604,44 @@ class CupertinoPane {
         });
     }
     moveToBreak(val) {
-        if (!this.isPanePresented()) {
-            console.warn(`Cupertino Pane: Present pane before call moveToBreak()`);
-            return null;
-        }
-        if (!this.settings.breaks[val].enabled) {
-            console.warn('Cupertino Pane: %s breakpoint disabled', val);
-            return;
-        }
-        this.checkOpacityAttr(this.breakpoints.breaks[val]);
-        this.checkOverflowAttr(this.breakpoints.breaks[val]);
-        this.doTransition({ type: 'breakpoint', translateY: this.breakpoints.breaks[val] });
-        this.breakpoints.currentBreakpoint = this.breakpoints.breaks[val];
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isPanePresented()) {
+                console.warn(`Cupertino Pane: Present pane before call moveToBreak()`);
+                return null;
+            }
+            if (!this.settings.breaks[val].enabled) {
+                console.warn('Cupertino Pane: %s breakpoint disabled', val);
+                return;
+            }
+            this.checkOpacityAttr(this.breakpoints.breaks[val]);
+            this.checkOverflowAttr(this.breakpoints.breaks[val]);
+            yield this.doTransition({ type: 'breakpoint', translateY: this.breakpoints.breaks[val] });
+            this.breakpoints.currentBreakpoint = this.breakpoints.breaks[val];
+        });
     }
     moveToHeight(val) {
-        if (!this.isPanePresented()) {
-            console.warn(`Cupertino Pane: Present pane before call moveToHeight()`);
-            return null;
-        }
-        let translateY = this.screenHeightOffset ? this.screen_height - val : val;
-        this.checkOpacityAttr(translateY);
-        this.doTransition({ type: 'breakpoint', translateY });
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isPanePresented()) {
+                console.warn(`Cupertino Pane: Present pane before call moveToHeight()`);
+                return null;
+            }
+            let translateY = this.screenHeightOffset ? this.screen_height - val : val;
+            this.checkOpacityAttr(translateY);
+            yield this.doTransition({ type: 'breakpoint', translateY });
+        });
     }
     hide() {
-        if (!this.isPanePresented()) {
-            console.warn(`Cupertino Pane: Present pane before call hide()`);
-            return null;
-        }
-        if (this.isHidden()) {
-            console.warn(`Cupertino Pane: Pane already hidden`);
-            return null;
-        }
-        this.doTransition({ type: 'hide', translateY: this.screenHeightOffset });
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isPanePresented()) {
+                console.warn(`Cupertino Pane: Present pane before call hide()`);
+                return null;
+            }
+            if (this.isHidden()) {
+                console.warn(`Cupertino Pane: Pane already hidden`);
+                return null;
+            }
+            yield this.doTransition({ type: 'hide', translateY: this.screenHeightOffset });
+        });
     }
     isHidden() {
         if (!this.isPanePresented()) {

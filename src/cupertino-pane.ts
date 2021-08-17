@@ -671,7 +671,7 @@ export class CupertinoPane {
     await this.breakpoints.buildBreakpoints(this.breakpoints.lockedBreakpoints);
   }
 
-  public moveToBreak(val: string) {
+  public async moveToBreak(val: string): Promise<void> {
     if (!this.isPanePresented()) {
       console.warn(`Cupertino Pane: Present pane before call moveToBreak()`);
       return null;
@@ -684,11 +684,11 @@ export class CupertinoPane {
 
     this.checkOpacityAttr(this.breakpoints.breaks[val]);
     this.checkOverflowAttr(this.breakpoints.breaks[val]);
-    this.doTransition({type: 'breakpoint', translateY: this.breakpoints.breaks[val]});
+    await this.doTransition({type: 'breakpoint', translateY: this.breakpoints.breaks[val]});
     this.breakpoints.currentBreakpoint = this.breakpoints.breaks[val];
   }
 
-  public moveToHeight(val: number) {
+  public async moveToHeight(val: number): Promise<void> {
     if (!this.isPanePresented()) {
       console.warn(`Cupertino Pane: Present pane before call moveToHeight()`);
       return null;
@@ -696,10 +696,10 @@ export class CupertinoPane {
 
     let translateY = this.screenHeightOffset ? this.screen_height - val : val;
     this.checkOpacityAttr(translateY);
-    this.doTransition({type: 'breakpoint', translateY });
+    await this.doTransition({type: 'breakpoint', translateY });
   }
 
-  public hide() {
+  public async hide(): Promise<void> {
     if (!this.isPanePresented()) {
       console.warn(`Cupertino Pane: Present pane before call hide()`);
       return null;
@@ -710,7 +710,7 @@ export class CupertinoPane {
       return null;
     }
 
-    this.doTransition({type: 'hide', translateY: this.screenHeightOffset});
+    await this.doTransition({type: 'hide', translateY: this.screenHeightOffset});
   }
 
   public isHidden(): (boolean|null) {
